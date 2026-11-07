@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم پرداخت باربری</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: Tahoma, Arial, sans-serif; background-color: #f3f4f6; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [role, setRole] = useState(null); // 'employee' or 'accountant'
+            const [requests, setRequests] = useState([]);
+            
+            // فرم کارمند
+            const [amount, setAmount] = useState('');
+            const [description, setDescription] = useState('');
+            
+            // فرم حسابدار
+            const [selectedRequest, setSelectedRequest] = useState(null);
+            const [status, setStatus] = useState('در حال پرداخت');
+            const [receiptImage, setReceiptImage] = useState(null);
+            const [trackingCode, setTrackingCode] = useState('');
+
+            // لود کردن داده‌ها از حافظه مرورگر
+            useEffect(() => {
+                const savedRequests = localStorage.getItem('barbariRequests');
+                if (savedRequests) {
+                    setRequests(JSON.parse(savedRequests));
+                }
+            }, []);
+
+            // ذخیره داده‌ها در حافظه مرورگر
+            useEffect(() => {
+                localStorage.setItem('barbariRequests', JSON.stringify(requests));
+            }, [requests]);
+
+            // فشرده‌سازی و تبدیل عکس به Base64
+            const handleImageUpload = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // چک کردن حجم (تا 10 مگابایت)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('حجم عکس نباید بیشتر از 10 مگابایت باشد.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800;
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        setReceiptImage(dataUrl);
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            };
+
+            // ارسال درخواست جدید توسط کارمند
+            const submitRequest = (e) => {
+                e.preventDefault();
+                if (!amount || !description) return alert('لطفا مبلغ و توضیحات را وارد کنید');
+                
+                const newReq = {
+                    id: Date.now(),
+                    amount,
+                    description,
+                    status: 'در انتظار تایید',
+                    date: new Date().toLocaleDateString('fa-IR'),
+                    receiptImage: null,
+                    trackingCode: ''
+                };
+                
+                setRequests([newReq, ...requests]);
+                setAmount('');
+                setDescription('');
+                alert('درخواست با موفقیت ثبت شد!');
+            };
+
+            // بروزرسانی وضعیت توسط حسابدار
+            const updateStatus = (e) => {
+                e.preventDefault();
+                if (!selectedRequest) return;
+
+                const updatedRequests = requests.map(req => {
+                    if (req.id === selectedRequest.id) {
+                        return { ...req, status, receiptImage, trackingCode };
+                    }
+                    return req;
+                });
+
+                setRequests(updatedRequests);
+                setSelectedRequest(null);
+                setReceiptImage(null);
+                setTrackingCode('');
+                alert('وضعیت بروزرسانی شد!');
+            };
+
+            // صفحه انتخاب نقش
+            if (!role) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center p-4">
+                        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+                            <h1 className="text-2xl font-bold mb-6 text-gray-800">سیستم پرداخت باربری</h1>
+                            <p className="mb-6 text-gray-600">لطفاً نقش خود را انتخاب کنید:</p>
+                            <div className="flex gap-4 justify-center">
+                                <button onClick={() => setRole('employee')} className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition w-full">کارمند</button>
+                                <button onClick={() => setRole('accountant')} className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition w-full">حسابداری</button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen p-4 max-w-4xl mx-auto">
+                    {/* Header */}
+                    <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow mb-6">
+                        <h2 className="text-xl font-bold">
+                            {role === 'employee' ? 'پنل کارمند (ثبت درخواست)' : 'پنل حسابداری (مدیریت درخواست‌ها)'}
+                        </h2>
+                        <button onClick={() => setRole(null)} className="text-sm bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">
+                            تغییر نقش
+                        </button>
+                    </div>
+
+                    {/* Employee View */}
+                    {role === 'employee' && (
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <form onSubmit={submitRequest} className="bg-white p-6 rounded-lg shadow">
+                                <h3 className="font-bold mb-4 border-b pb-2">ثبت درخواست جدید</h3>
+                                <div className="mb-4">
+                                    <label className="block text-sm mb-1">مبلغ (تومان)</label>
+                                    <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full border p-2 rounded" required />
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block text-sm mb-1">بابت / توضیحات</label>
+                                    <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border p-2 rounded" rows="3" required></textarea>
+                                </div>
+                                <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">ارسال به حسابداری</button>
+                            </form>
+
+                            <div className="bg-white p-6 rounded-lg shadow h-96 overflow-y-auto">
+                                <h3 className="font-bold mb-4 border-b pb-2">پیگیری درخواست‌های من</h3>
+                                {requests.map(req => (
+                                    <div key={req.id} className="border p-3 rounded mb-3 bg-gray-50">
+                                        <div className="flex justify-between mb-2">
+                                            <span className="font-bold">{req.amount} تومان</span>
+                                            <span className={`text-sm px-2 py-1 rounded ${req.status === 'پرداخت شده' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                                {req.status}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mb-2">{req.description}</p>
+                                        {req.receiptImage && (
+                                            <div className="mt-2 border-t pt-2">
+                                                <p className="text-xs mb-1">رسید پرداختی:</p>
+                                                <img src={req.receiptImage} alt="رسید" className="w-full rounded max-h-40 object-contain bg-white border" />
+                                            </div>
+                                        )}
+                                        {req.trackingCode && <p className="text-xs mt-2 text-gray-500">کد پیگیری: {req.trackingCode}</p>}
+                                    </div>
+                                ))}
+                                {requests.length === 0 && <p className="text-center text-gray-500 text-sm mt-4">درخواستی ثبت نشده است.</p>}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Accountant View */}
+                    {role === 'accountant' && (
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-white p-6 rounded-lg shadow h-screen overflow-y-auto">
+                                <h3 className="font-bold mb-4 border-b pb-2">لیست کل درخواست‌ها</h3>
+                                {requests.map(req => (
+                                    <div key={req.id} onClick={() => setSelectedRequest(req)} className="border p-3 rounded mb-3 cursor-pointer hover:bg-gray-50 transition">
+                                        <div className="flex justify-between mb-1">
+                                            <span className="font-bold text-blue-600">{req.amount} تومان</span>
+                                            <span className="text-xs bg-gray-200 px-2 py-1 rounded">{req.date}</span>
+                                        </div>
+                                        <p className="text-sm text-gray-600 line-clamp-1">{req.description}</p>
+                                        <p className="text-xs mt-2 font-semibold">وضعیت: {req.status}</p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {selectedRequest ? (
+                                <form onSubmit={updateStatus} className="bg-white p-6 rounded-lg shadow h-fit">
+                                    <h3 className="font-bold mb-4 border-b pb-2">بروزرسانی وضعیت پرداخت</h3>
+                                    <div className="mb-4 bg-blue-50 p-3 rounded">
+                                        <p className="text-sm"><strong>مبلغ:</strong> {selectedRequest.amount} تومان</p>
+                                        <p className="text-sm"><strong>بابت:</strong> {selectedRequest.description}</p>
+                                    </div>
+                                    
+                                    <div className="mb-4">
+                                        <label className="block text-sm mb-1">وضعیت جدید</label>
+                                        <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full border p-2 rounded">
+                                            <option value="در حال پرداخت">در حال بررسی / پرداخت</option>
+                                            <option value="پرداخت شده">پرداخت شده</option>
+                                            <option value="رد شده">رد شده</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <label className="block text-sm mb-1">شماره پیگیری (اختیاری)</label>
+                                        <input type="text" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value)} className="w-full border p-2 rounded" />
+                                    </div>
+
+                                    <div className="mb-6">
+                                        <label className="block text-sm mb-1">آپلود عکس رسید (تا ۱۰ مگابایت)</label>
+                                        <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full border p-2 rounded text-sm" />
+                                        {receiptImage && <img src={receiptImage} alt="پیش‌نمایش" className="mt-2 h-24 rounded border" />}
+                                    </div>
+
+                                    <div className="flex gap-2">
+                                        <button type="submit" className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700">ثبت و ارسال به کارمند</button>
+                                        <button type="button" onClick={() => setSelectedRequest(null)} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">انصراف</button>
+                                    </div>
+                                </form>
+                            ) : (
+                                <div className="bg-white p-6 rounded-lg shadow flex items-center justify-center text-gray-400 border-2 border-dashed">
+                                    برای بررسی، یک درخواست را از لیست انتخاب کنید
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
