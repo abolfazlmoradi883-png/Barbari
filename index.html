@@ -37,7 +37,11 @@
             Upload: () => <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>,
             Logout: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>,
             Key: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>,
-            Image: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Image: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>,
+            Settings: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>,
+            Trash: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>,
+            Search: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>,
+            Download: () => <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
         };
 
         const STATUS_CONFIG = {
@@ -50,7 +54,7 @@
         function App() {
             // وضعیت احراز هویت و کاربران
             const [currentUser, setCurrentUser] = useState(null);
-            const [authTab, setAuthTab] = useState('emp_login'); // 'emp_login' | 'emp_register' | 'acc_login'
+            const [authTab, setAuthTab] = useState('emp_login');
             const [authError, setAuthError] = useState('');
 
             // لیست کارمندان ثبت‌نام شده و رمز حسابداری
@@ -67,13 +71,22 @@
             const [regPassword, setRegPassword] = useState('');
             const [accPassInput, setAccPassInput] = useState('');
 
-            // مودال تغییر رمز حسابداری
-            const [showPassModal, setShowPassModal] = useState(false);
-            const [newAccPass, setNewAccPass] = useState('');
+            // مودال پروفایل و تنظیمات کاربری (با کلیک روی آیکون هدر)
+            const [showProfileModal, setShowProfileModal] = useState(false);
+            const [profileTab, setProfileTab] = useState('info'); // 'info' | 'security' | 'users' | 'backup'
+            const [profName, setProfName] = useState('');
+            const [profJobTitle, setProfJobTitle] = useState('');
+            const [profNationalCode, setProfNationalCode] = useState('');
+            const [profUsername, setProfUsername] = useState('');
+            const [profDefaultSheba, setProfDefaultSheba] = useState('');
+            const [profCurrentPass, setProfCurrentPass] = useState('');
+            const [profNewPass, setProfNewPass] = useState('');
+            const [profMsg, setProfMsg] = useState({ type: '', text: '' });
 
-            // استیت‌های درخواست‌ها
+            // استیت‌های درخواست‌ها و جستجو
             const [requests, setRequests] = useState([]);
             const [filterStatus, setFilterStatus] = useState('همه');
+            const [searchQuery, setSearchQuery] = useState('');
             const [previewModalImg, setPreviewModalImg] = useState(null);
 
             // استیت‌های فرم کارمند
@@ -92,20 +105,18 @@
 
             // بارگذاری اولیه از حافظه مرورگر
             useEffect(() => {
-                // ۱. بارگذاری کارمندان
                 const savedUsers = localStorage.getItem('barbari_users_v4');
                 if (savedUsers) {
                     setEmployees(JSON.parse(savedUsers));
                 } else {
                     const defaultUsers = [
-                        { id: 'emp1', name: 'علی رضایی', nationalCode: '0012345678', jobTitle: 'ترخیص و بارنامه', username: 'ali', password: '123' },
-                        { id: 'emp2', name: 'محمد حسینی', nationalCode: '0098765432', jobTitle: 'امور رانندگان', username: 'mohammad', password: '123' }
+                        { id: 'emp1', name: 'علی رضایی', nationalCode: '0012345678', jobTitle: 'ترخیص و بارنامه', username: 'ali', password: '123', defaultSheba: '6037-9975-9912-3456' },
+                        { id: 'emp2', name: 'محمد حسینی', nationalCode: '0098765432', jobTitle: 'امور رانندگان', username: 'mohammad', password: '123', defaultSheba: '' }
                     ];
                     setEmployees(defaultUsers);
                     localStorage.setItem('barbari_users_v4', JSON.stringify(defaultUsers));
                 }
 
-                // ۲. بارگذاری رمز حسابداری
                 const savedAccPass = localStorage.getItem('barbari_acc_pass_v4');
                 if (savedAccPass) {
                     setAccPassword(savedAccPass);
@@ -113,7 +124,6 @@
                     localStorage.setItem('barbari_acc_pass_v4', '123456');
                 }
 
-                // ۳. بارگذاری درخواست‌ها
                 const savedReqs = localStorage.getItem('barbari_requests_v4');
                 if (savedReqs) {
                     setRequests(JSON.parse(savedReqs));
@@ -142,14 +152,186 @@
 
             // ذخیره تغییرات درخواست‌ها
             useEffect(() => {
-                if (requests.length > 0) {
-                    localStorage.setItem('barbari_requests_v4', JSON.stringify(requests));
-                }
+                localStorage.setItem('barbari_requests_v4', JSON.stringify(requests));
             }, [requests]);
 
             const formatNumber = (num) => Number(num).toLocaleString('fa-IR');
 
-            // عملکرد ورود کارمند (امکان ورود با نام کاربری یا کد ملی)
+            // باز کردن پنجره پروفایل و تنظیم مقادیر اولیه
+            const openProfileModal = () => {
+                setProfMsg({ type: '', text: '' });
+                setProfCurrentPass('');
+                setProfNewPass('');
+                if (currentUser.role === 'employee') {
+                    setProfileTab('info');
+                    setProfName(currentUser.name || '');
+                    setProfJobTitle(currentUser.jobTitle || '');
+                    setProfNationalCode(currentUser.nationalCode || '');
+                    setProfUsername(currentUser.username || '');
+                    setProfDefaultSheba(currentUser.defaultSheba || '');
+                } else {
+                    setProfileTab('security');
+                }
+                setShowProfileModal(true);
+            };
+
+            // ذخیره مشخصات کاربری کارمند (نام، نام کاربری، کد ملی، سمت و شبا پیش‌فرض)
+            const handleUpdateEmployeeProfile = (e) => {
+                e.preventDefault();
+                setProfMsg({ type: '', text: '' });
+
+                const cleanUser = profUsername.trim().toLowerCase();
+                const cleanNC = profNationalCode.trim();
+
+                if (!profName.trim() || !cleanUser || !cleanNC) {
+                    setProfMsg({ type: 'error', text: 'نام، کد ملی و نام کاربری نمی‌توانند خالی باشند.' });
+                    return;
+                }
+                if (!/^\d{10}$/.test(cleanNC)) {
+                    setProfMsg({ type: 'error', text: 'کد ملی باید دقیقاً ۱۰ رقم عددی باشد.' });
+                    return;
+                }
+                if (employees.some(u => u.id !== currentUser.id && u.username.toLowerCase() === cleanUser)) {
+                    setProfMsg({ type: 'error', text: 'این نام کاربری متعلق به کارمند دیگری است.' });
+                    return;
+                }
+                if (employees.some(u => u.id !== currentUser.id && u.nationalCode === cleanNC)) {
+                    setProfMsg({ type: 'error', text: 'این کد ملی قبلاً برای کارمند دیگری ثبت شده است.' });
+                    return;
+                }
+
+                const updatedEmp = {
+                    ...currentUser,
+                    name: profName.trim(),
+                    jobTitle: profJobTitle.trim() || 'کارمند باربری',
+                    nationalCode: cleanNC,
+                    username: cleanUser,
+                    defaultSheba: profDefaultSheba.trim()
+                };
+
+                const updatedList = employees.map(u => u.id === currentUser.id ? updatedEmp : u);
+                setEmployees(updatedList);
+                localStorage.setItem('barbari_users_v4', JSON.stringify(updatedList));
+                setCurrentUser(updatedEmp);
+
+                // بروزرسانی نام کارمند در درخواست‌های قبلی او
+                const updatedReqs = requests.map(r => r.empId === currentUser.id ? {
+                    ...r,
+                    empName: `${updatedEmp.name} (${updatedEmp.jobTitle})`,
+                    empNationalCode: updatedEmp.nationalCode
+                } : r);
+                setRequests(updatedReqs);
+
+                if (!sheba && updatedEmp.defaultSheba) {
+                    setSheba(updatedEmp.defaultSheba);
+                }
+
+                setProfMsg({ type: 'success', text: 'مشخصات حساب کاربری با موفقیت بروزرسانی شد!' });
+            };
+
+            // تغییر رمز عبور کارمند
+            const handleUpdateEmployeePassword = (e) => {
+                e.preventDefault();
+                setProfMsg({ type: '', text: '' });
+
+                if (profCurrentPass !== currentUser.password) {
+                    setProfMsg({ type: 'error', text: 'رمز عبور فعلی را اشتباه وارد کرده‌اید.' });
+                    return;
+                }
+                if (!profNewPass || profNewPass.length < 3) {
+                    setProfMsg({ type: 'error', text: 'رمز عبور جدید باید حداقل ۳ کاراکتر باشد.' });
+                    return;
+                }
+
+                const updatedEmp = { ...currentUser, password: profNewPass };
+                const updatedList = employees.map(u => u.id === currentUser.id ? updatedEmp : u);
+                setEmployees(updatedList);
+                localStorage.setItem('barbari_users_v4', JSON.stringify(updatedList));
+                setCurrentUser(updatedEmp);
+                setProfCurrentPass('');
+                setProfNewPass('');
+                setProfMsg({ type: 'success', text: 'رمز عبور شما با موفقیت تغییر یافت!' });
+            };
+
+            // تغییر رمز عبور حسابداری
+            const handleChangeAccPassword = (e) => {
+                e.preventDefault();
+                setProfMsg({ type: '', text: '' });
+                if (!profNewPass || profNewPass.length < 4) {
+                    setProfMsg({ type: 'error', text: 'رمز جدید حسابداری باید حداقل ۴ کاراکتر باشد.' });
+                    return;
+                }
+                setAccPassword(profNewPass);
+                localStorage.setItem('barbari_acc_pass_v4', profNewPass);
+                setProfNewPass('');
+                setProfMsg({ type: 'success', text: 'رمز عبور واحد حسابداری با موفقیت تغییر کرد.' });
+            };
+
+            // ریست کردن رمز کارمند توسط مدیر حسابداری
+            const handleResetEmpPassByAdmin = (empId, empName) => {
+                const newPass = prompt(`رمز عبور جدید برای "${empName}" را وارد کنید:`, '1234');
+                if (newPass && newPass.trim()) {
+                    const updated = employees.map(u => u.id === empId ? { ...u, password: newPass.trim() } : u);
+                    setEmployees(updated);
+                    localStorage.setItem('barbari_users_v4', JSON.stringify(updated));
+                    alert(`رمز عبور ${empName} به "${newPass.trim()}" تغییر یافت.`);
+                }
+            };
+
+            // حذف کارمند توسط مدیر حسابداری
+            const handleDeleteEmployeeByAdmin = (empId, empName) => {
+                if (confirm(`آیا از حذف حساب کاربری "${empName}" اطمینان دارید؟`)) {
+                    const updated = employees.filter(u => u.id !== empId);
+                    setEmployees(updated);
+                    localStorage.setItem('barbari_users_v4', JSON.stringify(updated));
+                }
+            };
+
+            // دانلود فایل پشتیبان (Backup)
+            const handleDownloadBackup = () => {
+                const data = {
+                    employees,
+                    accPassword,
+                    requests,
+                    exportDate: new Date().toLocaleDateString('fa-IR')
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `barbari-backup-${Date.now()}.json`;
+                a.click();
+            };
+
+            // بازیابی فایل پشتیبان
+            const handleRestoreBackup = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        const parsed = JSON.parse(ev.target.result);
+                        if (parsed.employees && parsed.requests) {
+                            setEmployees(parsed.employees);
+                            localStorage.setItem('barbari_users_v4', JSON.stringify(parsed.employees));
+                            setRequests(parsed.requests);
+                            localStorage.setItem('barbari_requests_v4', JSON.stringify(parsed.requests));
+                            if (parsed.accPassword) {
+                                setAccPassword(parsed.accPassword);
+                                localStorage.setItem('barbari_acc_pass_v4', parsed.accPassword);
+                            }
+                            setProfMsg({ type: 'success', text: 'اطلاعات پشتیبان با موفقیت بازیابی شد!' });
+                        } else {
+                            setProfMsg({ type: 'error', text: 'فایل پشتیبان معتبر نیست.' });
+                        }
+                    } catch (err) {
+                        setProfMsg({ type: 'error', text: 'خطا در خواندن فایل پشتیبان.' });
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            // ورود کارمند
             const handleEmployeeLogin = (e) => {
                 e.preventDefault();
                 setAuthError('');
@@ -163,11 +345,12 @@
                     return;
                 }
                 setCurrentUser({ role: 'employee', ...found });
+                setSheba(found.defaultSheba || '');
                 setLoginUsername('');
                 setLoginPassword('');
             };
 
-            // عملکرد ثبت‌نام کارمند جدید به همراه کد ملی
+            // ثبت‌نام کارمند جدید
             const handleEmployeeRegister = (e) => {
                 e.preventDefault();
                 setAuthError('');
@@ -197,14 +380,14 @@
                     nationalCode: cleanNationalCode,
                     jobTitle: regJobTitle.trim() || 'کارمند باربری',
                     username: cleanUser,
-                    password: regPassword
+                    password: regPassword,
+                    defaultSheba: ''
                 };
 
                 const updatedUsers = [...employees, newEmp];
                 setEmployees(updatedUsers);
                 localStorage.setItem('barbari_users_v4', JSON.stringify(updatedUsers));
 
-                // ورود خودکار پس از ثبت‌نام
                 setCurrentUser({ role: 'employee', ...newEmp });
                 setRegName('');
                 setRegNationalCode('');
@@ -213,7 +396,7 @@
                 setRegPassword('');
             };
 
-            // عملکرد ورود حسابداری با رمز اختصاصی
+            // ورود حسابداری
             const handleAccountantLogin = (e) => {
                 e.preventDefault();
                 setAuthError('');
@@ -223,20 +406,6 @@
                 }
                 setCurrentUser({ role: 'accountant' });
                 setAccPassInput('');
-            };
-
-            // تغییر رمز حسابداری
-            const handleChangeAccPassword = (e) => {
-                e.preventDefault();
-                if (!newAccPass || newAccPass.length < 4) {
-                    alert('رمز جدید باید حداقل ۴ کاراکتر باشد.');
-                    return;
-                }
-                setAccPassword(newAccPass);
-                localStorage.setItem('barbari_acc_pass_v4', newAccPass);
-                setNewAccPass('');
-                setShowPassModal(false);
-                alert('رمز عبور واحد حسابداری با موفقیت تغییر کرد.');
             };
 
             // آپلود و فشرده‌سازی عکس تا ۱۰ مگابایت
@@ -293,8 +462,15 @@
                 setRequests([newItem, ...requests]);
                 setAmount('');
                 setTitle('');
-                setSheba('');
+                setSheba(currentUser.defaultSheba || '');
                 setDescription('');
+            };
+
+            // حذف درخواست توسط کارمند (فقط در حالت در انتظار بررسی)
+            const handleDeleteMyRequest = (reqId) => {
+                if (confirm('آیا از لغو و حذف این درخواست پرداخت اطمینان دارید؟')) {
+                    setRequests(requests.filter(r => r.id !== reqId));
+                }
             };
 
             // ثبت تغییرات حسابدار
@@ -320,17 +496,20 @@
                 setReceiptImg(req.receiptImage || null);
             };
 
-            // فیلتر درخواست‌های کارمند فعلی
+            // فیلتر درخواست‌های کارمند فعلی به همراه جستجو
             const myRequests = useMemo(() => {
                 if (!currentUser || currentUser.role !== 'employee') return [];
-                return requests.filter(r => r.empId === currentUser.id);
-            }, [requests, currentUser]);
+                return requests
+                    .filter(r => r.empId === currentUser.id)
+                    .filter(r => !searchQuery || r.title.includes(searchQuery) || (r.trackingCode && r.trackingCode.includes(searchQuery)));
+            }, [requests, currentUser, searchQuery]);
 
-            // فیلتر درخواست‌ها برای حسابداری
+            // فیلتر درخواست‌ها برای حسابداری به همراه جستجو
             const filteredAccRequests = useMemo(() => {
-                if (filterStatus === 'همه') return requests;
-                return requests.filter(r => r.status === filterStatus);
-            }, [requests, filterStatus]);
+                return requests
+                    .filter(r => filterStatus === 'همه' || r.status === filterStatus)
+                    .filter(r => !searchQuery || r.title.includes(searchQuery) || r.empName.includes(searchQuery) || (r.empNationalCode && r.empNationalCode.includes(searchQuery)));
+            }, [requests, filterStatus, searchQuery]);
 
             // ==================== صفحه ورود و ثبت‌نام ====================
             if (!currentUser) {
@@ -343,7 +522,6 @@
                             <h1 className="text-2xl font-black text-center text-slate-800 mb-1">سامانه مالی باربری</h1>
                             <p className="text-center text-slate-500 text-xs mb-6">ورود امن کارمندان و واحد حسابداری</p>
 
-                            {/* تب‌های انتخاب نوع ورود */}
                             <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1.5 rounded-2xl mb-6 text-xs font-bold">
                                 <button 
                                     onClick={() => { setAuthTab('emp_login'); setAuthError(''); }}
@@ -371,7 +549,6 @@
                                 </div>
                             )}
 
-                            {/* فرم ۱: ورود کارمند */}
                             {authTab === 'emp_login' && (
                                 <form onSubmit={handleEmployeeLogin} className="space-y-4 animate-fade">
                                     <div>
@@ -408,7 +585,6 @@
                                 </form>
                             )}
 
-                            {/* فرم ۲: ثبت‌نام کارمند جدید همراه با کد ملی */}
                             {authTab === 'emp_register' && (
                                 <form onSubmit={handleEmployeeRegister} className="space-y-3.5 animate-fade">
                                     <div>
@@ -476,7 +652,6 @@
                                 </form>
                             )}
 
-                            {/* فرم ۳: ورود اختصاصی واحد حسابداری */}
                             {authTab === 'acc_login' && (
                                 <form onSubmit={handleAccountantLogin} className="space-y-4 animate-fade">
                                     <div className="bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl text-xs text-emerald-800 leading-relaxed">
@@ -508,16 +683,24 @@
             // ==================== محیط اصلی برنامه پس از ورود ====================
             return (
                 <div className="min-h-screen pb-12">
-                    {/* نوار بالای برنامه (Header) */}
+                    {/* نوار بالای برنامه (Header) - بخش پروفایل کاملاً قابل کلیک شده است */}
                     <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-                        <div className="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-md ${currentUser.role === 'employee' ? 'bg-indigo-600' : 'bg-emerald-600'}`}>
+                        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                            {/* دکمه پروفایل و تنظیمات روی آیکون و نام کاربری */}
+                            <div 
+                                onClick={openProfileModal}
+                                title="برای ویرایش کاربری، تغییر رمز عبور یا خروج کلیک کنید"
+                                className="flex items-center gap-3 p-1.5 pr-2 pl-3 -mr-1.5 rounded-2xl hover:bg-slate-100/90 active:scale-[0.99] cursor-pointer transition group border border-transparent hover:border-slate-200"
+                            >
+                                <div className={`relative w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md transition group-hover:scale-105 ${currentUser.role === 'employee' ? 'bg-indigo-600 shadow-indigo-500/20' : 'bg-emerald-600 shadow-emerald-500/20'}`}>
                                     {currentUser.role === 'employee' ? <Icons.User /> : <Icons.Calculator />}
+                                    <span className="absolute -bottom-1 -left-1 w-5 h-5 bg-slate-800 text-white rounded-full flex items-center justify-center border-2 border-white shadow">
+                                        <Icons.Settings />
+                                    </span>
                                 </div>
                                 <div>
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <h2 className="font-extrabold text-slate-800 text-base md:text-lg">
+                                        <h2 className="font-extrabold text-slate-800 text-base md:text-lg group-hover:text-indigo-600 transition">
                                             {currentUser.role === 'employee' ? `پنل کاربری: ${currentUser.name}` : 'پنل مرکزی واحد حسابداری'}
                                         </h2>
                                         <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${currentUser.role === 'employee' ? 'bg-indigo-50 text-indigo-700' : 'bg-emerald-50 text-emerald-700'}`}>
@@ -529,26 +712,33 @@
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-xs text-slate-400 mt-0.5">سیستم یکپارچه مالی باربری</p>
+                                    <p className="text-xs text-indigo-600 font-bold mt-0.5 flex items-center gap-1">
+                                        <span>تنظیمات حساب، تغییر رمز عبور و خروج (کلیک کنید)</span>
+                                        <span>←</span>
+                                    </p>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2">
-                                {currentUser.role === 'accountant' && (
-                                    <button 
-                                        onClick={() => setShowPassModal(true)}
-                                        className="flex items-center gap-1.5 text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-2.5 rounded-xl transition"
-                                    >
-                                        <Icons.Key />
-                                        <span>تغییر رمز حسابداری</span>
-                                    </button>
-                                )}
+                            {/* کادر جستجوی سریع در هدر */}
+                            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                                <div className="relative flex-1 sm:w-56">
+                                    <input 
+                                        type="text"
+                                        placeholder="جستجو در درخواست‌ها..."
+                                        value={searchQuery}
+                                        onChange={e => setSearchQuery(e.target.value)}
+                                        className="w-full bg-slate-100 focus:bg-white border border-slate-200 rounded-xl py-2 pr-8 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                                    />
+                                    <span className="absolute right-2.5 top-2.5 text-slate-400">
+                                        <Icons.Search />
+                                    </span>
+                                </div>
                                 <button 
                                     onClick={() => { setCurrentUser(null); setSelectedReq(null); }}
-                                    className="flex items-center gap-1.5 text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3.5 py-2.5 rounded-xl transition"
+                                    className="flex items-center gap-1.5 text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3 py-2 rounded-xl transition shrink-0"
                                 >
                                     <Icons.Logout />
-                                    <span>خروج از حساب</span>
+                                    <span className="hidden md:inline">خروج</span>
                                 </button>
                             </div>
                         </div>
@@ -559,7 +749,7 @@
                         {currentUser.role === 'employee' && (
                             <div className="space-y-6 animate-fade">
                                 {/* کارت‌های آماری کارمند */}
-                                <div className="grid grid-cols-3 gap-3 md:gap-5">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                                     <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
                                         <p className="text-xs text-slate-400 font-medium">کل درخواست‌های من</p>
                                         <p className="text-xl md:text-2xl font-black text-slate-800 mt-1">{myRequests.length} <span className="text-xs font-normal text-slate-400">مورد</span></p>
@@ -574,6 +764,12 @@
                                         <p className="text-xs text-emerald-600 font-medium">پرداخت شده</p>
                                         <p className="text-xl md:text-2xl font-black text-emerald-600 mt-1">
                                             {myRequests.filter(r => r.status === 'پرداخت شده').length} <span className="text-xs font-normal">رسید</span>
+                                        </p>
+                                    </div>
+                                    <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                                        <p className="text-xs text-indigo-600 font-medium">مجموع واریزی به من</p>
+                                        <p className="text-base md:text-lg font-black text-indigo-700 mt-1 truncate">
+                                            {formatNumber(myRequests.filter(r => r.status === 'پرداخت شده').reduce((sum, r) => sum + Number(r.amount), 0))} <span className="text-xs font-normal">تومان</span>
                                         </p>
                                     </div>
                                 </div>
@@ -658,7 +854,7 @@
 
                                         {myRequests.length === 0 ? (
                                             <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-300">
-                                                <p className="text-slate-400 text-sm">شما هنوز هیچ درخواست پرداختی ثبت نکرده‌اید.</p>
+                                                <p className="text-slate-400 text-sm">موردی یافت نشد.</p>
                                             </div>
                                         ) : (
                                             myRequests.map(req => {
@@ -670,10 +866,21 @@
                                                                 <h4 className="font-extrabold text-slate-800 text-base">{req.title}</h4>
                                                                 <span className="text-xs text-slate-400 mt-0.5 block">{req.date}</span>
                                                             </div>
-                                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${st.bg} ${st.text} ${st.border}`}>
-                                                                <span className={`w-2 h-2 rounded-full ${st.dot}`}></span>
-                                                                {req.status}
-                                                            </span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${st.bg} ${st.text} ${st.border}`}>
+                                                                    <span className={`w-2 h-2 rounded-full ${st.dot}`}></span>
+                                                                    {req.status}
+                                                                </span>
+                                                                {req.status === 'در انتظار بررسی' && (
+                                                                    <button 
+                                                                        onClick={() => handleDeleteMyRequest(req.id)}
+                                                                        title="لغو و حذف درخواست"
+                                                                        className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg border border-transparent hover:border-rose-200 transition"
+                                                                    >
+                                                                        <Icons.Trash />
+                                                                    </button>
+                                                                )}
+                                                            </div>
                                                         </div>
 
                                                         <div className="my-3 flex flex-wrap items-center justify-between gap-2 bg-slate-50 p-3.5 rounded-2xl">
@@ -691,7 +898,6 @@
 
                                                         {req.description && <p className="text-xs text-slate-600 leading-relaxed mb-3">{req.description}</p>}
 
-                                                        {/* بخش پاسخ و رسید حسابداری */}
                                                         {(req.trackingCode || req.accNote || req.receiptImage) && (
                                                             <div className="mt-4 pt-3 border-t border-dashed border-slate-200 bg-emerald-50/40 p-3.5 rounded-2xl">
                                                                 <p className="text-xs font-bold text-emerald-800 mb-2">پاسخ واحد حسابداری:</p>
@@ -726,7 +932,6 @@
                         {/* ==================== نمای حسابداری ==================== */}
                         {currentUser.role === 'accountant' && (
                             <div className="space-y-6 animate-fade">
-                                {/* فیلتر وضعیت‌ها */}
                                 <div className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex flex-wrap items-center justify-between gap-3">
                                     <div className="flex flex-wrap gap-1.5">
                                         {['همه', 'در انتظار بررسی', 'در حال پرداخت', 'پرداخت شده', 'رد شده'].map(st => (
@@ -739,11 +944,15 @@
                                             </button>
                                         ))}
                                     </div>
-                                    <span className="text-xs text-slate-400 px-2">تعداد کل کارمندان ثبت‌نام شده: {employees.length} نفر</span>
+                                    <button 
+                                        onClick={openProfileModal}
+                                        className="text-xs text-emerald-700 font-bold bg-emerald-50 hover:bg-emerald-100 px-3 py-2 rounded-xl transition"
+                                    >
+                                        مدیریت کارمندان ({employees.length} نفر) و تنظیمات ←
+                                    </button>
                                 </div>
 
                                 <div className="grid lg:grid-cols-12 gap-6">
-                                    {/* لیست کل درخواست‌ها */}
                                     <div className="lg:col-span-7 space-y-3.5">
                                         {filteredAccRequests.map(req => {
                                             const st = STATUS_CONFIG[req.status] || STATUS_CONFIG['در انتظار بررسی'];
@@ -787,7 +996,6 @@
                                         })}
                                     </div>
 
-                                    {/* پنل ویرایش و ارسال رسید توسط حسابدار */}
                                     <div className="lg:col-span-5">
                                         {selectedReq ? (
                                             <form onSubmit={handleAccountantSave} className="bg-white p-6 rounded-3xl border-2 border-emerald-500/40 shadow-xl sticky top-24 animate-fade">
@@ -887,30 +1095,189 @@
                         )}
                     </main>
 
-                    {/* مودال تغییر رمز عبور حسابداری */}
-                    {showPassModal && (
+                    {/* ==================== مودال جامع تنظیمات حساب کاربری و مدیریت ==================== */}
+                    {showProfileModal && (
                         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                            <form onSubmit={handleChangeAccPassword} className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-fade">
-                                <h3 className="font-extrabold text-slate-800 text-base mb-2">تغییر رمز عبور واحد حسابداری</h3>
-                                <p className="text-xs text-slate-500 mb-4">رمز عبور جدیدی برای ورود به پنل مدیریت حسابداری تعیین کنید:</p>
-                                <input 
-                                    type="text" 
-                                    dir="ltr"
-                                    placeholder="رمز عبور جدید (حداقل ۴ رقم)"
-                                    value={newAccPass}
-                                    onChange={e => setNewAccPass(e.target.value)}
-                                    className="w-full border border-slate-200 rounded-xl p-3 text-sm text-center font-mono mb-4 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                    required
-                                />
-                                <div className="flex gap-2">
-                                    <button type="submit" className="flex-1 bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-emerald-700">
-                                        ذخیره رمز جدید
+                            <div className="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl animate-fade max-h-[90vh] overflow-y-auto">
+                                {/* هدر مودال */}
+                                <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${currentUser.role === 'employee' ? 'bg-indigo-600' : 'bg-emerald-600'}`}>
+                                            <Icons.Settings />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-extrabold text-slate-800 text-base">
+                                                {currentUser.role === 'employee' ? 'تنظیمات حساب کاربری کارمند' : 'تنظیمات مدیریت و حسابداری'}
+                                            </h3>
+                                            <p className="text-xs text-slate-400">ویرایش اطلاعات، تغییر رمز و مدیریت نشست</p>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => setShowProfileModal(false)} className="text-slate-400 hover:text-slate-700 text-sm font-bold px-2 py-1">✕</button>
+                                </div>
+
+                                {/* تب‌های داخل مودال */}
+                                {currentUser.role === 'employee' ? (
+                                    <div className="grid grid-cols-2 gap-1.5 bg-slate-100 p-1.5 rounded-2xl mb-5 text-xs font-bold">
+                                        <button onClick={() => { setProfileTab('info'); setProfMsg({type:'', text:''}); }} className={`py-2.5 rounded-xl transition ${profileTab === 'info' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>
+                                            مشخصات و نام کاربری
+                                        </button>
+                                        <button onClick={() => { setProfileTab('security'); setProfMsg({type:'', text:''}); }} className={`py-2.5 rounded-xl transition ${profileTab === 'security' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>
+                                            تغییر رمز عبور
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1.5 rounded-2xl mb-5 text-xs font-bold">
+                                        <button onClick={() => { setProfileTab('security'); setProfMsg({type:'', text:''}); }} className={`py-2.5 rounded-xl transition ${profileTab === 'security' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500'}`}>
+                                            رمز حسابداری
+                                        </button>
+                                        <button onClick={() => { setProfileTab('users'); setProfMsg({type:'', text:''}); }} className={`py-2.5 rounded-xl transition ${profileTab === 'users' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500'}`}>
+                                            مدیریت کارمندان ({employees.length})
+                                        </button>
+                                        <button onClick={() => { setProfileTab('backup'); setProfMsg({type:'', text:''}); }} className={`py-2.5 rounded-xl transition ${profileTab === 'backup' ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-500'}`}>
+                                            پشتیبان‌گیری
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* پیام خطا یا موفقیت */}
+                                {profMsg.text && (
+                                    <div className={`mb-4 p-3 rounded-xl text-xs font-bold text-center border ${profMsg.type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-700' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
+                                        {profMsg.text}
+                                    </div>
+                                )}
+
+                                {/* محتوای تب ۱ کارمند: ویرایش مشخصات و نام کاربری */}
+                                {currentUser.role === 'employee' && profileTab === 'info' && (
+                                    <form onSubmit={handleUpdateEmployeeProfile} className="space-y-3.5">
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-600 mb-1">نام و نام خانوادگی *</label>
+                                                <input type="text" value={profName} onChange={e => setProfName(e.target.value)} className="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-600 mb-1">سمت در باربری</label>
+                                                <input type="text" value={profJobTitle} onChange={e => setProfJobTitle(e.target.value)} className="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-600 mb-1">نام کاربری (جهت ورود) *</label>
+                                                <input type="text" dir="ltr" value={profUsername} onChange={e => setProfUsername(e.target.value)} className="w-full border border-slate-200 rounded-xl p-2.5 text-sm text-left font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-600 mb-1">کد ملی (۱۰ رقمی) *</label>
+                                                <input type="text" dir="ltr" maxLength="10" value={profNationalCode} onChange={e => setProfNationalCode(e.target.value.replace(/\D/g, ''))} className="w-full border border-slate-200 rounded-xl p-2.5 text-sm text-left font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-600 mb-1">شماره کارت یا شبا پیش‌فرض (اختیاری)</label>
+                                            <input type="text" dir="ltr" placeholder="6037-XXXX-XXXX-XXXX" value={profDefaultSheba} onChange={e => setProfDefaultSheba(e.target.value)} className="w-full border border-slate-200 rounded-xl p-2.5 text-sm text-left font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                            <span className="text-[11px] text-slate-400 mt-1 block">با ثبت این مورد، در فرم‌های بعدی شماره حساب شما خودکار درج می‌شود.</span>
+                                        </div>
+                                        <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm shadow-md transition">
+                                            ذخیره تغییرات کاربری
+                                        </button>
+                                    </form>
+                                )}
+
+                                {/* محتوای تب ۲ کارمند: تغییر رمز عبور */}
+                                {currentUser.role === 'employee' && profileTab === 'security' && (
+                                    <form onSubmit={handleUpdateEmployeePassword} className="space-y-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-600 mb-1">رمز عبور فعلی *</label>
+                                            <input type="password" dir="ltr" placeholder="رمز عبور فعلی خود را بنویسید" value={profCurrentPass} onChange={e => setProfCurrentPass(e.target.value)} className="w-full border border-slate-200 rounded-xl p-3 text-sm text-left font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-600 mb-1">رمز عبور جدید *</label>
+                                            <input type="text" dir="ltr" placeholder="رمز عبور جدید را وارد کنید" value={profNewPass} onChange={e => setProfNewPass(e.target.value)} className="w-full border border-slate-200 rounded-xl p-3 text-sm text-left font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+                                        </div>
+                                        <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm shadow-md transition">
+                                            بروزرسانی رمز عبور
+                                        </button>
+                                    </form>
+                                )}
+
+                                {/* محتوای تب ۱ حسابداری: تغییر رمز حسابداری */}
+                                {currentUser.role === 'accountant' && profileTab === 'security' && (
+                                    <form onSubmit={handleChangeAccPassword} className="space-y-4">
+                                        <p className="text-xs text-slate-500 leading-relaxed">رمز عبور فعلی واحد حسابداری در سیستم <code className="font-mono bg-slate-100 px-1.5 py-0.5 rounded font-bold text-slate-800">{accPassword}</code> است. برای تغییر آن، رمز جدید را در پایین وارد کنید:</p>
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-600 mb-1">رمز عبور جدید واحد حسابداری *</label>
+                                            <input type="text" dir="ltr" placeholder="حداقل ۴ کاراکتر" value={profNewPass} onChange={e => setProfNewPass(e.target.value)} className="w-full border border-slate-200 rounded-xl p-3 text-sm text-center font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500" required />
+                                        </div>
+                                        <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm shadow-md transition">
+                                            ذخیره رمز جدید حسابداری
+                                        </button>
+                                    </form>
+                                )}
+
+                                {/* محتوای تب ۲ حسابداری: مدیریت کارمندان ثبت‌نام شده */}
+                                {currentUser.role === 'accountant' && profileTab === 'users' && (
+                                    <div className="space-y-3 max-h-64 overflow-y-auto pl-1">
+                                        {employees.map(emp => (
+                                            <div key={emp.id} className="p-3 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-2">
+                                                <div>
+                                                    <p className="text-xs font-extrabold text-slate-800">{emp.name} <span className="font-normal text-slate-500">({emp.jobTitle})</span></p>
+                                                    <p className="text-[11px] font-mono text-slate-500 mt-0.5">
+                                                        کاربری: <strong className="text-indigo-600">{emp.username}</strong> | رمز: <strong className="text-emerald-700">{emp.password}</strong> | کد ملی: {emp.nationalCode || '-'}
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-1 shrink-0">
+                                                    <button onClick={() => handleResetEmpPassByAdmin(emp.id, emp.name)} className="text-[11px] bg-white border border-slate-200 hover:bg-indigo-50 text-indigo-600 font-bold px-2.5 py-1.5 rounded-lg">
+                                                        تغییر رمز
+                                                    </button>
+                                                    <button onClick={() => handleDeleteEmployeeByAdmin(emp.id, emp.name)} className="p-1.5 text-rose-500 hover:bg-rose-100 rounded-lg">
+                                                        <Icons.Trash />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* محتوای تب ۳ حسابداری: پشتیبان‌گیری و بازیابی اطلاعات */}
+                                {currentUser.role === 'accountant' && profileTab === 'backup' && (
+                                    <div className="space-y-4">
+                                        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                                            <h4 className="text-xs font-extrabold text-slate-800 mb-1">دانلود فایل پشتیبان (Backup)</h4>
+                                            <p className="text-xs text-slate-500 mb-3">تمامی درخواست‌ها، رسیدها و لیست کارمندان را در یک فایل ذخیره کنید.</p>
+                                            <button onClick={handleDownloadBackup} className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+                                                <Icons.Download />
+                                                <span>دانلود فایل پشتیبان</span>
+                                            </button>
+                                        </div>
+
+                                        <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200">
+                                            <h4 className="text-xs font-extrabold text-emerald-900 mb-1">بازگردانی اطلاعات (Restore)</h4>
+                                            <p className="text-xs text-emerald-700 mb-3">اگر قبلاً فایل پشتیبان گرفته‌اید، برای بازگردانی آن را انتخاب کنید:</p>
+                                            <label className="w-full bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-700 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer">
+                                                <Icons.Upload />
+                                                <span>انتخاب فایل پشتیبان (.json)</span>
+                                                <input type="file" accept=".json" onChange={handleRestoreBackup} className="hidden" />
+                                            </label>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* فوتر مودال: دکمه خروج کامل از حساب کاربری */}
+                                <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between gap-3">
+                                    <button 
+                                        type="button"
+                                        onClick={() => { setShowProfileModal(false); setCurrentUser(null); setSelectedReq(null); }}
+                                        className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-600/20 transition"
+                                    >
+                                        <Icons.Logout />
+                                        <span>خروج از این حساب کاربری (تعویض کاربر)</span>
                                     </button>
-                                    <button type="button" onClick={() => setShowPassModal(false)} className="bg-slate-100 text-slate-600 font-bold px-4 py-2.5 rounded-xl text-xs hover:bg-slate-200">
-                                        انصراف
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowProfileModal(false)} 
+                                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-3 rounded-xl text-xs transition"
+                                    >
+                                        بستن
                                     </button>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     )}
 
