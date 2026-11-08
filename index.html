@@ -49,10 +49,9 @@
 
         function App() {
             // وضعیت احراز هویت و کاربران
-            const [currentUser, setCurrentUser] = useState(null); // null | { role: 'employee', id, name, username, jobTitle } | { role: 'accountant' }
+            const [currentUser, setCurrentUser] = useState(null);
             const [authTab, setAuthTab] = useState('emp_login'); // 'emp_login' | 'emp_register' | 'acc_login'
             const [authError, setAuthError] = useState('');
-            const [authSuccess, setAuthSuccess] = useState('');
 
             // لیست کارمندان ثبت‌نام شده و رمز حسابداری
             const [employees, setEmployees] = useState([]);
@@ -62,6 +61,7 @@
             const [loginUsername, setLoginUsername] = useState('');
             const [loginPassword, setLoginPassword] = useState('');
             const [regName, setRegName] = useState('');
+            const [regNationalCode, setRegNationalCode] = useState('');
             const [regJobTitle, setRegJobTitle] = useState('');
             const [regUsername, setRegUsername] = useState('');
             const [regPassword, setRegPassword] = useState('');
@@ -93,28 +93,28 @@
             // بارگذاری اولیه از حافظه مرورگر
             useEffect(() => {
                 // ۱. بارگذاری کارمندان
-                const savedUsers = localStorage.getItem('barbari_users_v3');
+                const savedUsers = localStorage.getItem('barbari_users_v4');
                 if (savedUsers) {
                     setEmployees(JSON.parse(savedUsers));
                 } else {
                     const defaultUsers = [
-                        { id: 'emp1', name: 'علی رضایی', jobTitle: 'ترخیص و بارنامه', username: 'ali', password: '123' },
-                        { id: 'emp2', name: 'محمد حسینی', jobTitle: 'امور رانندگان', username: 'mohammad', password: '123' }
+                        { id: 'emp1', name: 'علی رضایی', nationalCode: '0012345678', jobTitle: 'ترخیص و بارنامه', username: 'ali', password: '123' },
+                        { id: 'emp2', name: 'محمد حسینی', nationalCode: '0098765432', jobTitle: 'امور رانندگان', username: 'mohammad', password: '123' }
                     ];
                     setEmployees(defaultUsers);
-                    localStorage.setItem('barbari_users_v3', JSON.stringify(defaultUsers));
+                    localStorage.setItem('barbari_users_v4', JSON.stringify(defaultUsers));
                 }
 
                 // ۲. بارگذاری رمز حسابداری
-                const savedAccPass = localStorage.getItem('barbari_acc_pass_v3');
+                const savedAccPass = localStorage.getItem('barbari_acc_pass_v4');
                 if (savedAccPass) {
                     setAccPassword(savedAccPass);
                 } else {
-                    localStorage.setItem('barbari_acc_pass_v3', '123456');
+                    localStorage.setItem('barbari_acc_pass_v4', '123456');
                 }
 
                 // ۳. بارگذاری درخواست‌ها
-                const savedReqs = localStorage.getItem('barbari_requests_v3');
+                const savedReqs = localStorage.getItem('barbari_requests_v4');
                 if (savedReqs) {
                     setRequests(JSON.parse(savedReqs));
                 } else {
@@ -123,6 +123,7 @@
                             id: 1710001,
                             empId: 'emp1',
                             empName: 'علی رضایی (ترخیص و بارنامه)',
+                            empNationalCode: '0012345678',
                             title: 'بیعانه کرایه تریلی کفی - بار تهران به بندرعباس',
                             amount: 18500000,
                             sheba: '6037-9975-9912-3456',
@@ -135,27 +136,30 @@
                         }
                     ];
                     setRequests(demoData);
-                    localStorage.setItem('barbari_requests_v3', JSON.stringify(demoData));
+                    localStorage.setItem('barbari_requests_v4', JSON.stringify(demoData));
                 }
             }, []);
 
             // ذخیره تغییرات درخواست‌ها
             useEffect(() => {
                 if (requests.length > 0) {
-                    localStorage.setItem('barbari_requests_v3', JSON.stringify(requests));
+                    localStorage.setItem('barbari_requests_v4', JSON.stringify(requests));
                 }
             }, [requests]);
 
             const formatNumber = (num) => Number(num).toLocaleString('fa-IR');
 
-            // عملکرد ورود کارمند
+            // عملکرد ورود کارمند (امکان ورود با نام کاربری یا کد ملی)
             const handleEmployeeLogin = (e) => {
                 e.preventDefault();
                 setAuthError('');
-                const cleanUser = loginUsername.trim().toLowerCase();
-                const found = employees.find(u => u.username.toLowerCase() === cleanUser && u.password === loginPassword);
+                const cleanInput = loginUsername.trim().toLowerCase();
+                const found = employees.find(u => 
+                    (u.username.toLowerCase() === cleanInput || u.nationalCode === cleanInput) && 
+                    u.password === loginPassword
+                );
                 if (!found) {
-                    setAuthError('نام کاربری یا رمز عبور اشتباه است.');
+                    setAuthError('نام کاربری/کد ملی یا رمز عبور اشتباه است.');
                     return;
                 }
                 setCurrentUser({ role: 'employee', ...found });
@@ -163,25 +167,34 @@
                 setLoginPassword('');
             };
 
-            // عملکرد ثبت‌نام کارمند جدید
+            // عملکرد ثبت‌نام کارمند جدید به همراه کد ملی
             const handleEmployeeRegister = (e) => {
                 e.preventDefault();
                 setAuthError('');
-                setAuthSuccess('');
                 const cleanUser = regUsername.trim().toLowerCase();
+                const cleanNationalCode = regNationalCode.trim();
 
-                if (!regName.trim() || !cleanUser || !regPassword) {
-                    setAuthError('لطفاً تمام فیلدهای ستاره‌دار را پر کنید.');
+                if (!regName.trim() || !cleanNationalCode || !cleanUser || !regPassword) {
+                    setAuthError('لطفاً تمام فیلدهای ستاره‌دار را تکمیل کنید.');
+                    return;
+                }
+                if (!/^\d{10}$/.test(cleanNationalCode)) {
+                    setAuthError('کد ملی باید دقیقاً ۱۰ رقم عددی باشد.');
+                    return;
+                }
+                if (employees.some(u => u.nationalCode === cleanNationalCode)) {
+                    setAuthError('این کد ملی قبلاً در سیستم ثبت شده است.');
                     return;
                 }
                 if (employees.some(u => u.username.toLowerCase() === cleanUser)) {
-                    setAuthError('این نام کاربری قبلاً ثبت شده است. نام دیگری انتخاب کنید.');
+                    setAuthError('این نام کاربری قبلاً انتخاب شده است.');
                     return;
                 }
 
                 const newEmp = {
                     id: 'emp_' + Date.now(),
                     name: regName.trim(),
+                    nationalCode: cleanNationalCode,
                     jobTitle: regJobTitle.trim() || 'کارمند باربری',
                     username: cleanUser,
                     password: regPassword
@@ -189,11 +202,12 @@
 
                 const updatedUsers = [...employees, newEmp];
                 setEmployees(updatedUsers);
-                localStorage.setItem('barbari_users_v3', JSON.stringify(updatedUsers));
+                localStorage.setItem('barbari_users_v4', JSON.stringify(updatedUsers));
 
                 // ورود خودکار پس از ثبت‌نام
                 setCurrentUser({ role: 'employee', ...newEmp });
                 setRegName('');
+                setRegNationalCode('');
                 setRegJobTitle('');
                 setRegUsername('');
                 setRegPassword('');
@@ -219,7 +233,7 @@
                     return;
                 }
                 setAccPassword(newAccPass);
-                localStorage.setItem('barbari_acc_pass_v3', newAccPass);
+                localStorage.setItem('barbari_acc_pass_v4', newAccPass);
                 setNewAccPass('');
                 setShowPassModal(false);
                 alert('رمز عبور واحد حسابداری با موفقیت تغییر کرد.');
@@ -264,6 +278,7 @@
                     id: Date.now(),
                     empId: currentUser.id,
                     empName: `${currentUser.name} (${currentUser.jobTitle})`,
+                    empNationalCode: currentUser.nationalCode || 'ثبت نشده',
                     title,
                     amount: Number(amount),
                     sheba,
@@ -360,11 +375,11 @@
                             {authTab === 'emp_login' && (
                                 <form onSubmit={handleEmployeeLogin} className="space-y-4 animate-fade">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-600 mb-1.5">نام کاربری</label>
+                                        <label className="block text-xs font-bold text-slate-600 mb-1.5">نام کاربری یا کد ملی</label>
                                         <input 
                                             type="text" 
                                             dir="ltr"
-                                            placeholder="username"
+                                            placeholder="Username / National Code"
                                             value={loginUsername}
                                             onChange={e => setLoginUsername(e.target.value)}
                                             className="w-full border border-slate-200 bg-slate-50 focus:bg-white rounded-xl p-3 text-sm text-left focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -393,7 +408,7 @@
                                 </form>
                             )}
 
-                            {/* فرم ۲: ثبت‌نام کارمند جدید */}
+                            {/* فرم ۲: ثبت‌نام کارمند جدید همراه با کد ملی */}
                             {authTab === 'emp_register' && (
                                 <form onSubmit={handleEmployeeRegister} className="space-y-3.5 animate-fade">
                                     <div>
@@ -404,6 +419,19 @@
                                             value={regName}
                                             onChange={e => setRegName(e.target.value)}
                                             className="w-full border border-slate-200 bg-slate-50 focus:bg-white rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-600 mb-1">کد ملی (۱۰ رقمی) *</label>
+                                        <input 
+                                            type="text" 
+                                            dir="ltr"
+                                            maxLength="10"
+                                            placeholder="0012345678"
+                                            value={regNationalCode}
+                                            onChange={e => setRegNationalCode(e.target.value.replace(/\D/g, ''))}
+                                            className="w-full border border-slate-200 bg-slate-50 focus:bg-white rounded-xl p-3 text-sm text-left font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                             required
                                         />
                                     </div>
@@ -488,13 +516,18 @@
                                     {currentUser.role === 'employee' ? <Icons.User /> : <Icons.Calculator />}
                                 </div>
                                 <div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         <h2 className="font-extrabold text-slate-800 text-base md:text-lg">
                                             {currentUser.role === 'employee' ? `پنل کاربری: ${currentUser.name}` : 'پنل مرکزی واحد حسابداری'}
                                         </h2>
                                         <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${currentUser.role === 'employee' ? 'bg-indigo-50 text-indigo-700' : 'bg-emerald-50 text-emerald-700'}`}>
                                             {currentUser.role === 'employee' ? currentUser.jobTitle : 'مدیریت مالی'}
                                         </span>
+                                        {currentUser.role === 'employee' && currentUser.nationalCode && (
+                                            <span className="text-xs px-2.5 py-0.5 rounded-full font-mono bg-slate-100 text-slate-600 border border-slate-200">
+                                                کد ملی: {currentUser.nationalCode}
+                                            </span>
+                                        )}
                                     </div>
                                     <p className="text-xs text-slate-400 mt-0.5">سیستم یکپارچه مالی باربری</p>
                                 </div>
@@ -723,7 +756,12 @@
                                                 >
                                                     <div className="flex items-start justify-between gap-2 mb-2">
                                                         <div>
-                                                            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md inline-block mb-1">{req.empName}</span>
+                                                            <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                                                                <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md">{req.empName}</span>
+                                                                {req.empNationalCode && (
+                                                                    <span className="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">کد ملی: {req.empNationalCode}</span>
+                                                                )}
+                                                            </div>
                                                             <h4 className="font-extrabold text-slate-800">{req.title}</h4>
                                                         </div>
                                                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${st.bg} ${st.text} ${st.border}`}>
@@ -758,8 +796,11 @@
                                                     <button type="button" onClick={() => setSelectedReq(null)} className="text-xs text-slate-400 hover:text-slate-600">بستن ✕</button>
                                                 </div>
 
-                                                <div className="bg-slate-50 p-3.5 rounded-2xl mb-4 text-xs space-y-1 border border-slate-200/60">
+                                                <div className="bg-slate-50 p-3.5 rounded-2xl mb-4 text-xs space-y-1.5 border border-slate-200/60">
                                                     <p><strong>درخواست‌دهنده:</strong> {selectedReq.empName}</p>
+                                                    {selectedReq.empNationalCode && (
+                                                        <p><strong>کد ملی کارمند:</strong> <span className="font-mono">{selectedReq.empNationalCode}</span></p>
+                                                    )}
                                                     <p><strong>بابت:</strong> {selectedReq.title}</p>
                                                     <p className="text-sm font-black text-emerald-700 pt-1">مبلغ: {formatNumber(selectedReq.amount)} تومان</p>
                                                     {selectedReq.sheba && <p className="font-mono text-slate-600">شماره حساب: {selectedReq.sheba}</p>}
